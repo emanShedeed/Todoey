@@ -9,6 +9,8 @@
 import UIKit
 
 class TodoListViewController: UITableViewController {
+    @IBOutlet weak var addBarButton: UIBarButtonItem!
+    
 var itemsArray=["Work","Home","Shopping"]
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +40,48 @@ var itemsArray=["Work","Home","Shopping"]
             cell?.accessoryType = .none
         }
          tableView.deselectRow(at: indexPath, animated: true)
+        
+    }
+    //MARK: - Add Item to List
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        var textField=UITextField()
+        //TODO: - Declare alert
+        let addItemAlert=UIAlertController(title: "Add new Item", message: "", preferredStyle: .alert)
+        
+        //TODO: - Declare and add action
+        let action=UIAlertAction(title: "Add", style: .default) { (action) in
+            //add item to table view
+            self.itemsArray.append(textField.text!)
+            self.tableView.reloadData()
+            
+        }
+        addItemAlert.addAction(action)
+        action.isEnabled=false
+        
+        //MARK: - Declare and add textField to alert
+
+        addItemAlert.addTextField { (addItemTextField) in
+            addItemTextField.placeholder="Creat new item"
+            textField=addItemTextField
+            // Observe the UITextFieldTextDidChange notification to be notified in the below block when text is changed
+            NotificationCenter.default.addObserver(forName: .UITextFieldTextDidChange, object: addItemTextField, queue: OperationQueue.main, using:
+                {_ in
+                    // Being in this block means that something fired the UITextFieldTextDidChange notification.
+                    
+                    // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
+                    let textCount = addItemTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
+                    let textIsNotEmpty = textCount > 0
+                    
+                    // If the text contains non whitespace characters, enable the Add Button
+                    action.isEnabled = textIsNotEmpty
+                    
+            })
+            
+        }
+        
+        self.present(addItemAlert, animated: true, completion: nil)
+        
         
     }
 }
