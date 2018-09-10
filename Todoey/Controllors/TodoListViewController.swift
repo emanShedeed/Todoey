@@ -11,37 +11,50 @@ import UIKit
 class TodoListViewController: UITableViewController {
     @IBOutlet weak var addBarButton: UIBarButtonItem!
     let defaults=UserDefaults.standard
-var itemsArray=["Work","Home","Shopping"]
+    var itemsArray=[Item]()
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let array=defaults.array(forKey: "todoArray") as? [String]{
-            itemsArray=array
+        let item=Item()
+        item.title="work"
+        itemsArray.append(item)
+        
+        /*    if let array=defaults.array(forKey: "todoArray") as? [Item]{
+         itemsArray=array
+         }*/
+        if let decoded  = UserDefaults.standard.object(forKey: "todoArray2") as? Data{
+          let decodedTeams = NSKeyedUnarchiver.unarchiveObject(with: decoded) as! [Item]
+            itemsArray=decodedTeams
         }
+        
     }
     
     //MARK: - Tableview Datasource Methods
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemsArray.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell=tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-        cell.textLabel?.text = itemsArray[indexPath.row]
         
+        let cell=tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
+        cell.textLabel?.text = itemsArray[indexPath.row].title
+        itemsArray[indexPath.row].checked==true ? (cell.accessoryType = .checkmark): (cell.accessoryType = .none)
         return cell
     }
     //MARK: - Tableview Delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       // print("you select index: \(String(describing: tableView.cellForRow(at: indexPath)?.textLabel?.text!))")
-     
-        let cell=tableView.cellForRow(at: indexPath)
-        if (cell?.accessoryType == UITableViewCellAccessoryType.none) {
-            cell?.accessoryType = .checkmark
-        }
-        else{
-            cell?.accessoryType = .none
-        }
-         tableView.deselectRow(at: indexPath, animated: true)
+        // print("you select index: \(String(describing: tableView.cellForRow(at: indexPath)?.textLabel?.text!))")
+        
+        itemsArray[indexPath.row].checked = !itemsArray[indexPath.row].checked
+        tableView.reloadData()
+        /*let cell=tableView.cellForRow(at: indexPath)
+         if (cell?.accessoryType == UITableViewCellAccessoryType.none) {
+         cell?.accessoryType = .checkmark
+         }
+         else{
+         cell?.accessoryType = .none
+         }*/
+        
+        tableView.deselectRow(at: indexPath, animated: true)
         
     }
     //MARK: - Add Item to List
@@ -54,8 +67,14 @@ var itemsArray=["Work","Home","Shopping"]
         //TODO: - Declare and add action
         let action=UIAlertAction(title: "Add", style: .default) { (action) in
             //add item to table view
-            self.itemsArray.append(textField.text!)
-            self.defaults.set(self.itemsArray, forKey: "todoArray")
+            let newItem=Item()
+            newItem.title=textField.text!
+            self.itemsArray.append(newItem)
+            
+            let encodedData = NSKeyedArchiver.archivedData(withRootObject: newItem)
+            
+            self.defaults.set(encodedData, forKey: "todoArray2")
+            //self.defaults.set(self.itemsArray, forKey: "todoArray")
             self.tableView.reloadData()
             
         }
@@ -63,7 +82,7 @@ var itemsArray=["Work","Home","Shopping"]
         action.isEnabled=false
         
         //MARK: - Declare and add textField to alert
-
+        
         addItemAlert.addTextField { (addItemTextField) in
             addItemTextField.placeholder="Creat new item"
             textField=addItemTextField
