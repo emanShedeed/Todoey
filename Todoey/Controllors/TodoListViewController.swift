@@ -6,21 +6,16 @@
 //  Copyright © 2018 user137691. All rights reserved.
 //
 import UIKit
-
+import  CoreData
 class TodoListViewController: UITableViewController {
     @IBOutlet weak var addBarButton: UIBarButtonItem!
     let defaults=UserDefaults.standard
     var itemsArray=[Item]()
-    let dataFilePath=FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    
+    let context=(UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(dataFilePath!)
-        let item=Item()
-        item.title="work"
-        itemsArray.append(item)
-       loadData()
+        loadData()
     }
     
     //MARK: - Tableview Datasource Methods
@@ -53,7 +48,8 @@ class TodoListViewController: UITableViewController {
         //TODO: - Declare and add action
         let action=UIAlertAction(title: "Add", style: .default) { (action) in
             //add item to table view
-            let newItem=Item()
+            
+            let newItem=Item(context: self.context)
             newItem.title=textField.text!
             self.itemsArray.append(newItem)
             
@@ -61,10 +57,10 @@ class TodoListViewController: UITableViewController {
             
         }
         addItemAlert.addAction(action)
+        //as in the begin the text field is empty so disable the button
         action.isEnabled=false
         
         //MARK: - Declare and add textField to alert
-        
         addItemAlert.addTextField { (addItemTextField) in
             addItemTextField.placeholder="Creat new item"
             textField=addItemTextField
@@ -90,28 +86,19 @@ class TodoListViewController: UITableViewController {
     }
     func saveData()
     {
-        let encoder = PropertyListEncoder()
-        do{
-            let data = try encoder.encode(itemsArray)
-            try data.write(to: dataFilePath!)
-        }catch{
-            print("encoding error : \(error)")
-        }
-        tableView.reloadData()
-        
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
-  func loadData()
+    func loadData()
     {
-        if let data=try? Data(contentsOf: dataFilePath!){
-        let decoder=PropertyListDecoder()
+        let request : NSFetchRequest<Item>=Item.fetchRequest()
         do{
-            itemsArray = try decoder.decode([Item].self, from: data)
+            itemsArray = try  context.fetch(request)
         }catch{
-            print("decoding error :\(error)")
+            print("Error fetching data")
         }
-        
-        }
-        
     }
+    
 }
+        
+
 
