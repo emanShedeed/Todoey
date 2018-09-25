@@ -40,7 +40,7 @@ class TodoListViewController: UITableViewController {
         }
         return cell
     }
-    /*   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+      override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
      return true
      }
      
@@ -48,10 +48,19 @@ class TodoListViewController: UITableViewController {
      let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { (action, indexPath) in
      let alert = UIAlertController(title: "", message: "Edit list item", preferredStyle: .alert)
      alert.addTextField(configurationHandler: { (textField1) in
-     textField1.text = self.itemsArray[indexPath.row].title
+     textField1.text = self.items?[indexPath.row].title
      })
      alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (updateAction) in
-     self.itemsArray[indexPath.row].title = alert.textFields!.first!.text!
+        if let itemObj=self.items?[indexPath.row]{
+            do{
+                try self.realm.write {
+                    itemObj.title=alert.textFields!.first!.text!
+                    
+                }
+            }catch{
+                print("error updating item")
+            }
+        }
      self.tableView.reloadRows(at: [indexPath], with: .fade)
      }))
      alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -59,17 +68,35 @@ class TodoListViewController: UITableViewController {
      })
      
      let deleteAction = UITableViewRowAction(style: .default, title: "Delete", handler: { (action, indexPath) in
-     self.context.delete(self.itemsArray[indexPath.row])
-     self.itemsArray.remove(at: indexPath.row)
+       if let itemObj=self.items?[indexPath.row]{
+        do{
+            try self.realm.write {
+                self.realm.delete(itemObj)
+                
+            }
+        }catch{
+            print("error deleting item")
+        }
+        }
+
      tableView.reloadData()
      
      })
-     self.saveData()
      return [deleteAction, editAction]
-     }*/
+     }
     //MARK: - Tableview Delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        if let item=items?[indexPath.row]{
+            do{
+           try  realm.write {
+            item.checked = !item.checked
+            }
+            }catch{
+                print("error updating item")
+            }
+        tableView.reloadData()
+        }
+       
         //itemsArray[indexPath.row].checked = !itemsArray[indexPath.row].checked
         // saveData()
         tableView.deselectRow(at: indexPath, animated: true)

@@ -75,7 +75,7 @@ class CategoryTableViewController: UITableViewController {
         
     }
      // MARK: - Table view delegates
-  /*  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -83,12 +83,21 @@ class CategoryTableViewController: UITableViewController {
             
             let alert=UIAlertController(title: "Edit Category", message: "",preferredStyle: .alert)
             alert.addTextField(configurationHandler: { (categoryTextField) in
-                categoryTextField.text=self.categoryArray[indexPath.row].name
+                categoryTextField.text=self.categories?[indexPath.row].name ?? ""
                 
             })
           
             alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (action) in
-                self.categoryArray[indexPath.row].name=alert.textFields?.first?.text
+                if let categoryObj=self.categories?[indexPath.row]{
+                    do{
+                        try self.realm.write {
+                            categoryObj.name=(alert.textFields?.first?.text)!
+                            
+                        }
+                    }catch{
+                        print("error updating category")
+                    }
+                }
                 self.loadData()
                 
             }))
@@ -98,15 +107,21 @@ class CategoryTableViewController: UITableViewController {
         })
        
         let deleteAction=UITableViewRowAction(style: .default, title: "Delete") { (action, indexPath) in
-            self.context.delete(self.categoryArray[indexPath.row])
-            self.categoryArray.remove(at: indexPath.row)
+            if let categoryObj=self.categories?[indexPath.row]{
+                do{
+                    try self.realm.write {
+                        self.realm.delete(categoryObj)
+                        
+                    }
+                }catch{
+                    print("error updating category")
+                }
+            }
             tableView.reloadData()
         }
-        
-        self.save()
         return[deleteAction,editAction]
     }
- */
+
      // MARK: - Seues section
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
