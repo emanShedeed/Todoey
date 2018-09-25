@@ -150,7 +150,7 @@ class CategoryTableViewController: UITableViewController {
         tableView.reloadData()
     }
     func  loadDataWithSearchKeys() {
-        categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "name", ascending: true)
+        categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "nam", ascending: true)
         tableView.reloadData()
     }
 }
