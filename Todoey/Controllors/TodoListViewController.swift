@@ -6,14 +6,15 @@
 //  Copyright © 2018 user137691. All rights reserved.
 //
 import UIKit
-import  CoreData
+import  RealmSwift
 class TodoListViewController: UITableViewController {
     // @IBOutlet weak var addBarButton: UIBarButtonItem!
     @IBOutlet weak var search: UISearchBar!
-    var itemsArray=[Item]()
+    var items:Results<Item>?
+    let realm=try! Realm()
     var selectedCategory:Category?{
         didSet{
-           // loadData()
+            loadData()
         }
     }
     override func viewDidLoad() {
@@ -21,51 +22,56 @@ class TodoListViewController: UITableViewController {
         search.showsCancelButton = true
         // loadData()
     }
- /*
+
     //MARK: - Tableview Datasource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemsArray.count
+        return items?.count ?? 1
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell=tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-        cell.textLabel?.text = itemsArray[indexPath.row].title
-        itemsArray[indexPath.row].checked==true ? (cell.accessoryType = .checkmark): (cell.accessoryType = .none)
+        if let itemObj=items?[indexPath.row]{
+            cell.textLabel?.text = itemObj.title
+            cell.accessoryType=itemObj.checked ? .checkmark :.none
+            
+        }else{
+        cell.textLabel?.text="No Items Added"
+        }
         return cell
     }
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { (action, indexPath) in
-            let alert = UIAlertController(title: "", message: "Edit list item", preferredStyle: .alert)
-            alert.addTextField(configurationHandler: { (textField1) in
-                textField1.text = self.itemsArray[indexPath.row].title
-            })
-            alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (updateAction) in
-                self.itemsArray[indexPath.row].title = alert.textFields!.first!.text!
-                self.tableView.reloadRows(at: [indexPath], with: .fade)
-            }))
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-            self.present(alert, animated: false)
-        })
-        
-        let deleteAction = UITableViewRowAction(style: .default, title: "Delete", handler: { (action, indexPath) in
-            self.context.delete(self.itemsArray[indexPath.row])
-            self.itemsArray.remove(at: indexPath.row)
-            tableView.reloadData()
-            
-        })
-        self.saveData()
-        return [deleteAction, editAction]
-    }
+    /*   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+     return true
+     }
+     
+     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+     let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { (action, indexPath) in
+     let alert = UIAlertController(title: "", message: "Edit list item", preferredStyle: .alert)
+     alert.addTextField(configurationHandler: { (textField1) in
+     textField1.text = self.itemsArray[indexPath.row].title
+     })
+     alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (updateAction) in
+     self.itemsArray[indexPath.row].title = alert.textFields!.first!.text!
+     self.tableView.reloadRows(at: [indexPath], with: .fade)
+     }))
+     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+     self.present(alert, animated: false)
+     })
+     
+     let deleteAction = UITableViewRowAction(style: .default, title: "Delete", handler: { (action, indexPath) in
+     self.context.delete(self.itemsArray[indexPath.row])
+     self.itemsArray.remove(at: indexPath.row)
+     tableView.reloadData()
+     
+     })
+     self.saveData()
+     return [deleteAction, editAction]
+     }*/
     //MARK: - Tableview Delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        itemsArray[indexPath.row].checked = !itemsArray[indexPath.row].checked
-        saveData()
+        //itemsArray[indexPath.row].checked = !itemsArray[indexPath.row].checked
+        // saveData()
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
@@ -79,13 +85,22 @@ class TodoListViewController: UITableViewController {
         //TODO: - Declare and add action
         let addAction=UIAlertAction(title: "Add", style: .default) { (action) in
             //add item to table view
-            let newItem=Item(context: self.context)
-            newItem.title=textField.text!
-            newItem.category=self.selectedCategory
-            self.itemsArray.append(newItem)
             
-            self.saveData()
-            
+            if let currentCategory=self.selectedCategory{
+                
+                
+                do{
+                    try self.realm.write {
+                        let newItem=Item()
+                        newItem.title=textField.text!
+                        currentCategory.items.append(newItem)
+                       
+                    }
+                }catch{
+                    print("error saving items")
+                }
+            }
+            self.tableView.reloadData()
         }
         addItemAlert.addAction(addAction)
         addItemAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -117,38 +132,23 @@ class TodoListViewController: UITableViewController {
         
     }
     
-    func saveData()
+  
+   func loadData()
     {
-        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+       items = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+
         tableView.reloadData()
     }
-    func loadData(with request:NSFetchRequest<Item> = Item.fetchRequest(),searchPredict:NSPredicate?=nil)
-    {
-        let categoryPredicate=NSPredicate(format: "category.name Matches %@", (selectedCategory?.name)!)
-        if(searchPredict==nil){
-            request.predicate=categoryPredicate
-        }else{
-            let CompoundPredicate=NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,searchPredict!])
-            request.predicate=CompoundPredicate
-        }
-        
-        do{
-            itemsArray = try  context.fetch(request)
-        }catch{
-            print("Error fetching data")
-        }
-        tableView.reloadData()
-    }
-    func  loadDataWithSearchKeys() {
+ /* func  loadDataWithSearchKeys() {
         let request:NSFetchRequest<Item>=Item.fetchRequest()
         let predicate=NSPredicate(format: "title CONTAINS [cd] %@", search.text!)
         request.sortDescriptors=[NSSortDescriptor(key: "title", ascending: true)]
         loadData(with: request, searchPredict: predicate)
         
-    }
+    }*/
     
 }
-extension TodoListViewController:UISearchBarDelegate
+/*extension TodoListViewController:UISearchBarDelegate
 {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if(searchBar.text?.count==0){
@@ -175,9 +175,8 @@ extension TodoListViewController:UISearchBarDelegate
         }
         
     }
-    */
     
-}
+}*/
 
 
 
