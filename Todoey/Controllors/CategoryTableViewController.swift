@@ -9,10 +9,13 @@
 import UIKit
 import RealmSwift
 class CategoryTableViewController: UITableViewController {
+    
+    @IBOutlet weak var search: UISearchBar!
     var categories:Results<Category>?
     let realm=try! Realm()
     override func viewDidLoad() {
         super.viewDidLoad()
+        search.showsCancelButton=true
         loadData()
     }
     
@@ -146,23 +149,38 @@ class CategoryTableViewController: UITableViewController {
        categories = realm.objects(Category.self)
         tableView.reloadData()
     }
+    func  loadDataWithSearchKeys() {
+        categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "name", ascending: true)
+        tableView.reloadData()
+    }
 }
  // MARK: -  SearchBar Delegates
-/*extension CategoryTableViewController:UISearchBarDelegate{
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+extension CategoryTableViewController:UISearchBarDelegate
+{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if(searchBar.text?.count==0){
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-            }
-            loadData()
+            searchBarCancelButtonClicked(searchBar)
         }
         else{
-            let request:NSFetchRequest<Category>=Category.fetchRequest()
-            request.predicate=NSPredicate(format: "name CONTAINS [cd] %@", searchBar.text!)
-            request.sortDescriptors=[NSSortDescriptor(key: "name", ascending: true)]
-            loadData(with: request)
+            loadDataWithSearchKeys()
+            
+        }
+    }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        loadData()
+        DispatchQueue.main.async {
+            searchBar.resignFirstResponder()
+        }
+        
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if(searchBar.text?.count==0){
+            searchBarCancelButtonClicked(searchBar)
+        }
+        else{
+            loadDataWithSearchKeys()
         }
         
     }
     
-}*/
+}

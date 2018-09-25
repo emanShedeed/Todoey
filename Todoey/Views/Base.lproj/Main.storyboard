@@ -49,6 +49,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="search" destination="pCZ-nM-aqs" id="Pjj-6l-ff9"/>
                         <segue destination="rgw-2D-ReR" kind="show" identifier="goToItems" id="7Qe-Y4-uxa"/>
                     </connections>
                 </tableViewController>

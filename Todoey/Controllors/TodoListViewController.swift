@@ -166,16 +166,13 @@ class TodoListViewController: UITableViewController {
 
         tableView.reloadData()
     }
- /* func  loadDataWithSearchKeys() {
-        let request:NSFetchRequest<Item>=Item.fetchRequest()
-        let predicate=NSPredicate(format: "title CONTAINS [cd] %@", search.text!)
-        request.sortDescriptors=[NSSortDescriptor(key: "title", ascending: true)]
-        loadData(with: request, searchPredict: predicate)
-        
-    }*/
+    func  loadDataWithSearchKeys() {
+        items=items?.filter(NSPredicate(format: "title CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "title", ascending: true)
+        tableView.reloadData()
+    }
     
 }
-/*extension TodoListViewController:UISearchBarDelegate
+extension TodoListViewController:UISearchBarDelegate
 {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if(searchBar.text?.count==0){
@@ -203,7 +200,7 @@ class TodoListViewController: UITableViewController {
         
     }
     
-}*/
+}
 
 
 
