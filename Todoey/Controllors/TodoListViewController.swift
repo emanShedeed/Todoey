@@ -13,16 +13,15 @@ class TodoListViewController: UITableViewController {
     var itemsArray=[Item]()
     var selectedCategory:Category?{
         didSet{
-            loadData()
+           // loadData()
         }
     }
-    let context=(UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     override func viewDidLoad() {
         super.viewDidLoad()
         search.showsCancelButton = true
         // loadData()
     }
-    
+ /*
     //MARK: - Tableview Datasource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -176,7 +175,7 @@ extension TodoListViewController:UISearchBarDelegate
         }
         
     }
-    
+    */
     
 }
 

@@ -7,10 +7,10 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 class CategoryTableViewController: UITableViewController {
-    let context=(UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    var categoryArray=[Category]()
+    var categories:Results<Category>?
+    let realm=try! Realm()
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
@@ -20,11 +20,17 @@ class CategoryTableViewController: UITableViewController {
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return categoryArray.count
+        return categories?.count ?? 1
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell", for: indexPath)
-        cell.textLabel?.text=categoryArray[indexPath.row].name
+        if(categories==nil || categories?.count==0)
+        {
+            cell.textLabel?.text="No Category have been added yet"
+            
+        }else{
+        cell.textLabel?.text=categories![indexPath.row].name
+        }
         return cell
         
     }
@@ -33,13 +39,12 @@ class CategoryTableViewController: UITableViewController {
         var alertTextField=UITextField()
         let alert=UIAlertController(title: "Add category", message: "", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add", style: .default) { (action) in
-            let category=Category(context: self.context)
-            category.name=alertTextField.text
-            if(self.categoryArray.contains{ $0.name?.lowercased() == category.name?.lowercased()}){
+            let category=Category()
+            category.name=alertTextField.text!
+            if(self.categories?.contains{ $0.name.lowercased() == category.name.lowercased()} ?? false){
                 ProgressHUD.showError("category with the same name found")
             }else{
-                self.categoryArray.append(category)
-                self.save()
+                self.save(category: category)
             }
         }
         alert.addAction(addAction)
@@ -70,7 +75,7 @@ class CategoryTableViewController: UITableViewController {
         
     }
      // MARK: - Table view delegates
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+  /*  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -101,34 +106,34 @@ class CategoryTableViewController: UITableViewController {
         self.save()
         return[deleteAction,editAction]
     }
+ */
      // MARK: - Seues section
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC=segue.destination as! TodoListViewController
-        destinationVC.selectedCategory=categoryArray[(tableView.indexPathForSelectedRow?.row)!]
+        destinationVC.selectedCategory=categories?[(tableView.indexPathForSelectedRow?.row)!]
     }
      // MARK: - Data Manipulation
-    func save()  {
+    func save(category:Category)  {
         do{
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         }
         catch{
             print("Error saving data ")
         }
         tableView.reloadData()
     }
-    func  loadData(with request:NSFetchRequest<Category>=Category.fetchRequest())  {
-        do{
-            categoryArray=try context.fetch(request)
-        }catch{
-        }
+    func  loadData()  {
+       categories = realm.objects(Category.self)
         tableView.reloadData()
     }
 }
  // MARK: -  SearchBar Delegates
-extension CategoryTableViewController:UISearchBarDelegate{
+/*extension CategoryTableViewController:UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if(searchBar.text?.count==0){
             DispatchQueue.main.async {
@@ -145,4 +150,4 @@ extension CategoryTableViewController:UISearchBarDelegate{
         
     }
     
-}
+}*/
