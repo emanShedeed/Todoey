@@ -131,7 +131,9 @@ class CategoryTableViewController: UITableViewController {
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC=segue.destination as! TodoListViewController
-        destinationVC.selectedCategory=categories?[(tableView.indexPathForSelectedRow?.row)!]
+        if let indexPath=tableView.indexPathForSelectedRow{
+        destinationVC.selectedCategory=categories?[indexPath.row]
+        }
     }
      // MARK: - Data Manipulation
     func save(category:Category)  {
@@ -150,7 +152,8 @@ class CategoryTableViewController: UITableViewController {
         tableView.reloadData()
     }
     func  loadDataWithSearchKeys() {
-        categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "nam", ascending: true)
+         categories = realm.objects(Category.self)
+         categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "name", ascending: true)
         tableView.reloadData()
     }
 }

@@ -121,7 +121,7 @@ class TodoListViewController: UITableViewController {
                         let newItem=Item()
                         newItem.title=textField.text!
                         currentCategory.items.append(newItem)
-                       
+                        
                     }
                 }catch{
                     print("error saving items")
@@ -167,7 +167,8 @@ class TodoListViewController: UITableViewController {
         tableView.reloadData()
     }
     func  loadDataWithSearchKeys() {
-        items=items?.filter(NSPredicate(format: "title CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "title", ascending: true)
+        items = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+        items=items?.filter(NSPredicate(format: "title CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "dateCreated", ascending: false)
         tableView.reloadData()
     }
     
