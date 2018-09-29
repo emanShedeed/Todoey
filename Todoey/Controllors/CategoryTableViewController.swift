@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import MGSwipeTableCell
 class CategoryTableViewController: UITableViewController {
     
     @IBOutlet weak var search: UISearchBar!
@@ -26,14 +27,25 @@ class CategoryTableViewController: UITableViewController {
         return categories?.count ?? 1
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell", for: indexPath)
-        if(categories==nil || categories?.count==0)
-        {
-            cell.textLabel?.text="No Category have been added yet"
-            
-        }else{
-        cell.textLabel?.text=categories![indexPath.row].name
-        }
+
+        let reuseIdentifier = "programmaticCell"
+        var cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! MGSwipeTableCell
+        
+        
+        cell.textLabel!.text = "Title"
+        //cell.detailTextLabel!.text = "Detail text"
+        cell.delegate = self //optional
+        
+        //configure left buttons
+        cell.leftButtons = [MGSwipeButton(title: "any thing", icon: UIImage(named:"check.png"), backgroundColor: .green),
+                            MGSwipeButton(title: "any thing2", icon: UIImage(named:"fav.png"), backgroundColor: .blue)]
+        cell.leftSwipeSettings.transition = .rotate3D
+        
+        //configure right buttons
+        cell.rightButtons = [MGSwipeButton(title: "Delete", backgroundColor: .red),
+                             MGSwipeButton(title: "More",backgroundColor: .lightGray)]
+        cell.rightSwipeSettings.transition = .rotate3D
+        
         return cell
         
     }
@@ -78,7 +90,7 @@ class CategoryTableViewController: UITableViewController {
         
     }
      // MARK: - Table view delegates
-  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+ /* override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -123,7 +135,7 @@ class CategoryTableViewController: UITableViewController {
             tableView.reloadData()
         }
         return[deleteAction,editAction]
-    }
+    }*/
 
      // MARK: - Seues section
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -185,5 +197,9 @@ extension CategoryTableViewController:UISearchBarDelegate
         }
         
     }
+    
+}
+// MARK:- Swipe delegates
+extension CategoryTableViewController:MGSwipeTableCellDelegate{
     
 }
