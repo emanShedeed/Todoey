@@ -7,8 +7,7 @@
 //
 import UIKit
 import  RealmSwift
-class TodoListViewController: UITableViewController {
-    // @IBOutlet weak var addBarButton: UIBarButtonItem!
+class TodoListViewController: SearchTableViewController {
     @IBOutlet weak var search: UISearchBar!
     var items:Results<Item>?
     let realm=try! Realm()
@@ -20,7 +19,6 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         search.showsCancelButton = true
-        // loadData()
     }
 
     //MARK: - Tableview Datasource Methods
@@ -56,7 +54,6 @@ class TodoListViewController: UITableViewController {
                 tableView.reloadData()
                 
             }
-            
             
         }
         deleteAction.backgroundColor = .red
@@ -98,14 +95,11 @@ class TodoListViewController: UITableViewController {
             }
         tableView.reloadData()
         }
-       
-        //itemsArray[indexPath.row].checked = !itemsArray[indexPath.row].checked
-        // saveData()
+
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
     //MARK: - Add Item to List
-    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField=UITextField()
         //TODO: - Declare alert
@@ -116,14 +110,11 @@ class TodoListViewController: UITableViewController {
             //add item to table view
             
             if let currentCategory=self.selectedCategory{
-                
-                
                 do{
                     try self.realm.write {
                         let newItem=Item()
                         newItem.title=textField.text!
                         currentCategory.items.append(newItem)
-                        
                     }
                 }catch{
                     print("error saving items")
@@ -162,48 +153,20 @@ class TodoListViewController: UITableViewController {
     }
     
   
-   func loadData()
+    override func loadData()
     {
        items = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
 
         tableView.reloadData()
     }
-    func  loadDataWithSearchKeys() {
+    override func  loadDataWithSearchKeys() {
         items = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         items=items?.filter(NSPredicate(format: "title CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "dateCreated", ascending: false)
         tableView.reloadData()
     }
     
 }
-extension TodoListViewController:UISearchBarDelegate
-{
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if(searchBar.text?.count==0){
-            searchBarCancelButtonClicked(searchBar)
-        }
-        else{
-            loadDataWithSearchKeys()
-            
-        }
-    }
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        loadData()
-        DispatchQueue.main.async {
-            searchBar.resignFirstResponder()
-        }
-        
-    }
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if(searchBar.text?.count==0){
-            searchBarCancelButtonClicked(searchBar)
-        }
-        else{
-            loadDataWithSearchKeys()
-        }
-        
-    }
-    
-}
+
 
 
 

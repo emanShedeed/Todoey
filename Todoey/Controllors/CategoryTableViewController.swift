@@ -8,7 +8,7 @@
 
 import UIKit
 import RealmSwift
-class CategoryTableViewController: UITableViewController {
+class CategoryTableViewController: SearchTableViewController {
     
     @IBOutlet weak var search: UISearchBar!
     var categories:Results<Category>?
@@ -67,15 +67,10 @@ class CategoryTableViewController: UITableViewController {
                     
                     // If the text contains non whitespace characters, enable the Add Button
                     addAction.isEnabled = textIsNotEmpty
-                    
             })
             
         }
-        
-        
         self.present(alert, animated: true, completion: nil)
-        
-        
     }
      // MARK: - Edit and Delete actions
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
@@ -86,23 +81,19 @@ class CategoryTableViewController: UITableViewController {
                 categoryTextField.text=self.categories?[indexPath.row].name ?? ""
                 
             })
-            
             alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (action) in
                 if let categoryObj=self.categories?[indexPath.row]{
                     do{
                         try self.realm.write {
                             categoryObj.name=(alert.textFields?.first?.text)!
-                            
                         }
                     }catch{
                         print("error updating category")
                     }
                 }
                 self.loadData()
-                
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler:nil))
-            
             self.present(alert, animated: true, completion: nil)
         }
         editAction.backgroundColor = .green
@@ -118,7 +109,6 @@ class CategoryTableViewController: UITableViewController {
                 do{
                     try self.realm.write {
                         self.realm.delete(categoryObj)
-                        
                     }
                 }catch{
                     print("error updating category")
@@ -153,44 +143,16 @@ class CategoryTableViewController: UITableViewController {
         }
         tableView.reloadData()
     }
-    func  loadData()  {
+    override func  loadData()  {
        categories = realm.objects(Category.self)
         tableView.reloadData()
     }
-    func  loadDataWithSearchKeys() {
+    override func  loadDataWithSearchKeys() {
          categories = realm.objects(Category.self)
          categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "name", ascending: true)
         tableView.reloadData()
     }
     
 }
- // MARK: -  SearchBar Delegates
-extension CategoryTableViewController:UISearchBarDelegate
-{
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if(searchBar.text?.count==0){
-            searchBarCancelButtonClicked(searchBar)
-        }
-        else{
-            loadDataWithSearchKeys()
-            
-        }
-    }
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        loadData()
-        DispatchQueue.main.async {
-            searchBar.resignFirstResponder()
-        }
-        
-    }
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if(searchBar.text?.count==0){
-            searchBarCancelButtonClicked(searchBar)
-        }
-        else{
-            loadDataWithSearchKeys()
-        }
-        
-    }
-    
-}
+
+

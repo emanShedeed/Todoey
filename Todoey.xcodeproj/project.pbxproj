@@ -13,6 +13,7 @@
 		E70BDB87213FAC4500B797A5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E70BDB85213FAC4500B797A5 /* Main.storyboard */; };
 		E70BDB89213FAC4600B797A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E70BDB88213FAC4600B797A5 /* Assets.xcassets */; };
 		E70BDB8C213FAC4700B797A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E70BDB8A213FAC4700B797A5 /* LaunchScreen.storyboard */; };
+		E748CD632160E33F008669E5 /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E748CD622160E33F008669E5 /* SearchTableViewController.swift */; };
 		E772FB76215A0DB700BF4743 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E772FB75215A0DB700BF4743 /* Category.swift */; };
 		E772FB78215A0DC400BF4743 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E772FB77215A0DC400BF4743 /* Item.swift */; };
 		E78BBDCE2146498400E99902 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E78BBDCD2146498400E99902 /* Default-568h@2x.png */; };
@@ -32,6 +33,7 @@
 		E70BDB88213FAC4600B797A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E70BDB8B213FAC4700B797A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E70BDB8D213FAC4700B797A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E748CD622160E33F008669E5 /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SearchTableViewController.swift; path = /Users/user137691/Desktop/Todoey/Todoey/Controllors/SearchTableViewController.swift; sourceTree = "<absolute>"; };
 		E772FB75215A0DB700BF4743 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		E772FB77215A0DC400BF4743 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		E78BBDCD2146498400E99902 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 		E7C8257321464312003EFE6F /* Controllors */ = {
 			isa = PBXGroup;
 			children = (
+				E748CD622160E33F008669E5 /* SearchTableViewController.swift */,
 				E794008D214FD5CA004C6BC3 /* CategoryTableViewController.swift */,
 				E70BDB83213FAC4500B797A5 /* TodoListViewController.swift */,
 			);
@@ -260,6 +263,7 @@
 				E70BDB84213FAC4500B797A5 /* TodoListViewController.swift in Sources */,
 				E772FB76215A0DB700BF4743 /* Category.swift in Sources */,
 				E7B1144521524DEB0044F9E8 /* ProgressHUD.m in Sources */,
+				E748CD632160E33F008669E5 /* SearchTableViewController.swift in Sources */,
 				E70BDB82213FAC4500B797A5 /* AppDelegate.swift in Sources */,
 				E772FB78215A0DC400BF4743 /* Item.swift in Sources */,
 				E794008E214FD5CA004C6BC3 /* CategoryTableViewController.swift in Sources */,
