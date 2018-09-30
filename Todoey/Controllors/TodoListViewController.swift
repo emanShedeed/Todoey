@@ -40,50 +40,52 @@ class TodoListViewController: UITableViewController {
         }
         return cell
     }
-      override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     
-     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-     let editAction = UITableViewRowAction(style: .default, title: "Edit", handler: { (action, indexPath) in
-     let alert = UIAlertController(title: "", message: "Edit list item", preferredStyle: .alert)
-     alert.addTextField(configurationHandler: { (textField1) in
-     textField1.text = self.items?[indexPath.row].title
-     })
-     alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (updateAction) in
-        if let itemObj=self.items?[indexPath.row]{
-            do{
-                try self.realm.write {
-                    itemObj.title=alert.textFields!.first!.text!
-                    
+    // MARK : - Edit and Delete actions
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+            if let itemObj=self.items?[indexPath.row]{
+                do{
+                    try self.realm.write {
+                        self.realm.delete(itemObj)
+                        
+                    }
+                }catch{
+                    print("error deleting item")
                 }
-            }catch{
-                print("error updating item")
-            }
-        }
-     self.tableView.reloadRows(at: [indexPath], with: .fade)
-     }))
-     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-     self.present(alert, animated: false)
-     })
-     
-     let deleteAction = UITableViewRowAction(style: .default, title: "Delete", handler: { (action, indexPath) in
-       if let itemObj=self.items?[indexPath.row]{
-        do{
-            try self.realm.write {
-                self.realm.delete(itemObj)
+                tableView.reloadData()
                 
             }
-        }catch{
-            print("error deleting item")
+            
+            
         }
+        deleteAction.backgroundColor = .red
+        let editAction = UIContextualAction(style: .destructive, title: "Edit") { (action, view, handler) in
+            let alert = UIAlertController(title: "", message: "Edit list item", preferredStyle: .alert)
+            alert.addTextField(configurationHandler: { (textField1) in
+                textField1.text = self.items?[indexPath.row].title
+            })
+            alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (updateAction) in
+                if let itemObj=self.items?[indexPath.row]{
+                    do{
+                        try self.realm.write {
+                            itemObj.title=alert.textFields!.first!.text!
+                            
+                        }
+                    }catch{
+                        print("error updating item")
+                    }
+                }
+                self.tableView.reloadRows(at: [indexPath], with: .fade)
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            self.present(alert, animated: false)
         }
-
-     tableView.reloadData()
-     
-     })
-     return [deleteAction, editAction]
-     }
+        editAction.backgroundColor = .green
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction,editAction])
+        configuration.performsFirstActionWithFullSwipe=true
+        return configuration
+    }
     //MARK: - Tableview Delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let item=items?[indexPath.row]{

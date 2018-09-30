@@ -10,13 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Todoey/Controllors/TodoListViewController.swift"
-            timestampString = "559646404.389605"
+            timestampString = "559997246.60903"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "180"
-            endingLineNumber = "180"
-            landmarkName = "searchBarSearchButtonClicked(_:)"
-            landmarkType = "7">
+            startingLineNumber = "182"
+            endingLineNumber = "182">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -26,13 +24,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Todoey/Controllors/TodoListViewController.swift"
-            timestampString = "559646404.389655"
+            timestampString = "559997246.609081"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "187"
-            endingLineNumber = "187"
-            landmarkName = "searchBarCancelButtonClicked(_:)"
-            landmarkType = "7">
+            startingLineNumber = "189"
+            endingLineNumber = "189">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
