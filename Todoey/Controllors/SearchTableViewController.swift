@@ -33,8 +33,30 @@ class SearchTableViewController: UITableViewController,UISearchBarDelegate {
         }
         
     }
-    func  loadData()  {
+    // MARK: - Edit and Delete actions
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    {
+        let editAction = UIContextualAction(style: .destructive, title: "Edit") { (action, view, handler) in
+            self.edit(at: indexPath)
+        }
+        editAction.backgroundColor = .green
+        let configuration = UISwipeActionsConfiguration(actions: [editAction])
+        configuration.performsFirstActionWithFullSwipe=true
+        return configuration
     }
-    func  loadDataWithSearchKeys() {
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+            self.delete(at: indexPath)
+        }
+        deleteAction.backgroundColor = .red
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        configuration.performsFirstActionWithFullSwipe=true
+        return configuration
     }
+    func  loadData()  {}
+    func  loadDataWithSearchKeys() {}
+    func edit(at indexPath:IndexPath){ }
+    func delete(at indexPath:IndexPath){}
 }

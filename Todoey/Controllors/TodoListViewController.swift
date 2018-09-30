@@ -38,8 +38,8 @@ class TodoListViewController: SearchTableViewController {
         }
         return cell
     }
-    // MARK : - Edit and Delete actions
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    // MARK: - Edit and Delete actions
+   /* override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
             if let itemObj=self.items?[indexPath.row]{
@@ -82,7 +82,7 @@ class TodoListViewController: SearchTableViewController {
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction,editAction])
         configuration.performsFirstActionWithFullSwipe=true
         return configuration
-    }
+    }*/
     //MARK: - Tableview Delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let item=items?[indexPath.row]{
@@ -95,20 +95,16 @@ class TodoListViewController: SearchTableViewController {
             }
         tableView.reloadData()
         }
-
         tableView.deselectRow(at: indexPath, animated: true)
-        
     }
     //MARK: - Add Item to List
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField=UITextField()
         //TODO: - Declare alert
         let addItemAlert=UIAlertController(title: "Add new Item", message: "", preferredStyle: .alert)
-        
         //TODO: - Declare and add action
         let addAction=UIAlertAction(title: "Add", style: .default) { (action) in
             //add item to table view
-            
             if let currentCategory=self.selectedCategory{
                 do{
                     try self.realm.write {
@@ -151,12 +147,10 @@ class TodoListViewController: SearchTableViewController {
         
         
     }
-    
-  
     override func loadData()
     {
-       items = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
-
+        items = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+        
         tableView.reloadData()
     }
     override func  loadDataWithSearchKeys() {
@@ -164,7 +158,41 @@ class TodoListViewController: SearchTableViewController {
         items=items?.filter(NSPredicate(format: "title CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "dateCreated", ascending: false)
         tableView.reloadData()
     }
-    
+    override func edit(at indexPath: IndexPath) {
+        let alert = UIAlertController(title: "", message: "Edit list item", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { (textField1) in
+            textField1.text = self.items?[indexPath.row].title
+        })
+        alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (updateAction) in
+            if let itemObj=self.items?[indexPath.row]{
+                do{
+                    try self.realm.write {
+                        itemObj.title=alert.textFields!.first!.text!
+                        
+                    }
+                }catch{
+                    print("error updating item")
+                }
+            }
+            self.tableView.reloadRows(at: [indexPath], with: .fade)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alert, animated: false)
+        
+    }
+    override func delete(at indexPath: IndexPath) {
+        if let itemObj=self.items?[indexPath.row]{
+            do{
+                try self.realm.write {
+                    self.realm.delete(itemObj)
+                    
+                }
+            }catch{
+                print("error deleting item")
+            }
+            tableView.reloadData()
+        }
+    }
 }
 
 

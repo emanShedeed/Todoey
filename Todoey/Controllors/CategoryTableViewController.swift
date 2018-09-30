@@ -72,55 +72,7 @@ class CategoryTableViewController: SearchTableViewController {
         }
         self.present(alert, animated: true, completion: nil)
     }
-     // MARK: - Edit and Delete actions
-    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
-    {
-        let editAction = UIContextualAction(style: .destructive, title: "Edit") { (action, view, handler) in
-            let alert=UIAlertController(title: "Edit Category", message: "",preferredStyle: .alert)
-            alert.addTextField(configurationHandler: { (categoryTextField) in
-                categoryTextField.text=self.categories?[indexPath.row].name ?? ""
-                
-            })
-            alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (action) in
-                if let categoryObj=self.categories?[indexPath.row]{
-                    do{
-                        try self.realm.write {
-                            categoryObj.name=(alert.textFields?.first?.text)!
-                        }
-                    }catch{
-                        print("error updating category")
-                    }
-                }
-                self.loadData()
-            }))
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler:nil))
-            self.present(alert, animated: true, completion: nil)
-        }
-        editAction.backgroundColor = .green
-        let configuration = UISwipeActionsConfiguration(actions: [editAction])
-        configuration.performsFirstActionWithFullSwipe=true
-        return configuration
-    }
-    
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
-    {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
-            if let categoryObj=self.categories?[indexPath.row]{
-                do{
-                    try self.realm.write {
-                        self.realm.delete(categoryObj)
-                    }
-                }catch{
-                    print("error updating category")
-                }
-                tableView.reloadData()
-            }
-        }
-        deleteAction.backgroundColor = .red
-        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
-        configuration.performsFirstActionWithFullSwipe=true
-        return configuration
-    }
+
     // MARK: - Seues section
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
@@ -151,6 +103,39 @@ class CategoryTableViewController: SearchTableViewController {
          categories = realm.objects(Category.self)
          categories=categories?.filter(NSPredicate(format: "name CONTAINS[cd] %@", search.text!)).sorted(byKeyPath: "name", ascending: true)
         tableView.reloadData()
+    }
+    override func edit(at indexPath: IndexPath) {
+        let alert=UIAlertController(title: "Edit Category", message: "",preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { (categoryTextField) in
+            categoryTextField.text=self.categories?[indexPath.row].name ?? ""
+            
+        })
+        alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (action) in
+            if let categoryObj=self.categories?[indexPath.row]{
+                do{
+                    try self.realm.write {
+                        categoryObj.name=(alert.textFields?.first?.text)!
+                    }
+                }catch{
+                    print("error updating category")
+                }
+            }
+            self.loadData()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler:nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    override func delete(at indexPath: IndexPath) {
+        if let categoryObj=self.categories?[indexPath.row]{
+            do{
+                try self.realm.write {
+                    self.realm.delete(categoryObj)
+                }
+            }catch{
+                print("error updating category")
+            }
+            tableView.reloadData()
+        }
     }
     
 }
