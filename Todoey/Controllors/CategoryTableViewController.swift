@@ -27,24 +27,65 @@ class CategoryTableViewController: UITableViewController {
         return categories?.count ?? 1
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        let reuseIdentifier = "programmaticCell"
-        var cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! MGSwipeTableCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell", for: indexPath)as! MGSwipeTableCell
+        if(categories==nil || categories?.count==0)
+        {
+            cell.textLabel?.text="No Category have been added yet"
+            
+        }else{
+            cell.textLabel?.text=categories![indexPath.row].name
+        }
         
-        
-        cell.textLabel!.text = "Title"
-        //cell.detailTextLabel!.text = "Detail text"
-        cell.delegate = self //optional
-        
-        //configure left buttons
-        cell.leftButtons = [MGSwipeButton(title: "any thing", icon: UIImage(named:"check.png"), backgroundColor: .green),
-                            MGSwipeButton(title: "any thing2", icon: UIImage(named:"fav.png"), backgroundColor: .blue)]
-        cell.leftSwipeSettings.transition = .rotate3D
-        
-        //configure right buttons
-        cell.rightButtons = [MGSwipeButton(title: "Delete", backgroundColor: .red),
-                             MGSwipeButton(title: "More",backgroundColor: .lightGray)]
-        cell.rightSwipeSettings.transition = .rotate3D
+        cell.rightButtons = [MGSwipeButton(title: "Delete", backgroundColor: UIColor.red, callback: {
+            (sender: MGSwipeTableCell!) -> Bool in
+            if let categoryObj=self.categories?[indexPath.row]{
+                do{
+                    try self.realm.write {
+                        self.realm.delete(categoryObj)
+                        
+                    }
+                }catch{
+                    print("error updating category")
+                }
+                tableView.reloadData()
+                
+            }
+            
+            return true
+        })
+            ,MGSwipeButton(title: "Edit",backgroundColor: UIColor.lightGray,callback: {
+                (sender: MGSwipeTableCell!) -> Bool in
+                
+                let alert=UIAlertController(title: "Edit Category", message: "",preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { (categoryTextField) in
+                    categoryTextField.text=self.categories?[indexPath.row].name ?? ""
+                    
+                })
+                
+                alert.addAction(UIAlertAction(title: "Update", style: .default, handler: { (action) in
+                    if let categoryObj=self.categories?[indexPath.row]{
+                        do{
+                            try self.realm.write {
+                                categoryObj.name=(alert.textFields?.first?.text)!
+                                
+                            }
+                        }catch{
+                            print("error updating category")
+                        }
+                    }
+                    self.loadData()
+                    
+                }))
+                alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler:nil))
+                
+                self.present(alert, animated: true, completion: nil)
+                return true
+            })]
+        //Rounded corners
+        cell.layer.cornerRadius = 20
+        cell.backgroundColor = UIColor.gray
+        cell.clipsToBounds = true
+        cell.swipeBackgroundColor = UIColor.gray
         
         return cell
         
@@ -201,5 +242,8 @@ extension CategoryTableViewController:UISearchBarDelegate
 }
 // MARK:- Swipe delegates
 extension CategoryTableViewController:MGSwipeTableCellDelegate{
+    func swipeTableCell(_ cell: MGSwipeTableCell, canSwipe direction: MGSwipeDirection, from point: CGPoint) -> Bool {
+        return true
+    }
     
 }
