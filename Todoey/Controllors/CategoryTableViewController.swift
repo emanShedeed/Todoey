@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 class CategoryTableViewController: SearchTableViewController {
     
     @IBOutlet weak var search: UISearchBar!
@@ -17,6 +18,7 @@ class CategoryTableViewController: SearchTableViewController {
         super.viewDidLoad()
         search.showsCancelButton=true
         loadData()
+        tableView.separatorStyle = .none
     }
     
     
@@ -32,8 +34,13 @@ class CategoryTableViewController: SearchTableViewController {
             cell.textLabel?.text="No Category have been added yet"
             
         }else{
-        cell.textLabel?.text=categories![indexPath.row].name
+            cell.textLabel?.text=categories![indexPath.row].name
+            cell.backgroundColor=UIColor(hexString:categories![indexPath.row].backgroundColor)
+            if let colour=UIColor(hexString: categories![indexPath.row].backgroundColor){
+             cell.textLabel?.textColor=ContrastColorOf(colour, returnFlat: true)
+            }
         }
+      
         return cell
         
     }
@@ -44,6 +51,7 @@ class CategoryTableViewController: SearchTableViewController {
         let addAction = UIAlertAction(title: "Add", style: .default) { (action) in
             let category=Category()
             category.name=alertTextField.text!
+            category.backgroundColor=UIColor.randomFlat.hexValue()
             if(self.categories?.contains{ $0.name.lowercased() == category.name.lowercased()} ?? false){
                 ProgressHUD.showError("category with the same name found")
             }else{

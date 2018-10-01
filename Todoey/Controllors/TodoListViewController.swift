@@ -7,6 +7,7 @@
 //
 import UIKit
 import  RealmSwift
+import ChameleonFramework
 class TodoListViewController: SearchTableViewController {
     @IBOutlet weak var search: UISearchBar!
     var items:Results<Item>?
@@ -19,6 +20,7 @@ class TodoListViewController: SearchTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         search.showsCancelButton = true
+        tableView.separatorStyle = .none
     }
 
     //MARK: - Tableview Datasource Methods
@@ -32,6 +34,11 @@ class TodoListViewController: SearchTableViewController {
         if let itemObj=items?[indexPath.row]{
             cell.textLabel?.text = itemObj.title
             cell.accessoryType=itemObj.checked ? .checkmark :.none
+           if let colour=UIColor(hexString:selectedCategory!.backgroundColor)?.darken(byPercentage: (CGFloat(indexPath.row)/CGFloat(items!.count)))
+           {
+            cell.backgroundColor=colour
+            cell.textLabel?.textColor=ContrastColorOf(colour , returnFlat: true)
+            }
             
         }else{
         cell.textLabel?.text="No Items Added"

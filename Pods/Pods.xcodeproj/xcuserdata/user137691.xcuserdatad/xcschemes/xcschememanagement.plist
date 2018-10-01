@@ -4,8 +4,10 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>MGSwipeTableCell.xcscheme</key>
+		<key>ChameleonFramework.xcscheme</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
@@ -32,22 +34,6 @@
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>1AE3EF2722C02A3F4AD4F82FD8DC6F28</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>8CE958556B23A359CA0AB601D1F4B560</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E5BE7D1AB9020D96BA8FA98648B8339A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-	</dict>
+	<dict/>
 </dict>
 </plist>
