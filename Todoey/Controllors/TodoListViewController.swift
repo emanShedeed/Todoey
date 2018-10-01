@@ -20,9 +20,26 @@ class TodoListViewController: SearchTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         search.showsCancelButton = true
-        tableView.separatorStyle = .none
+        
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        title=selectedCategory?.name
+        guard let hexColour=selectedCategory?.backgroundColor else{fatalError()}
+        UpdateNavBar(withHexCode: hexColour)
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        UpdateNavBar(withHexCode: defaultColor)
+    }
+    func UpdateNavBar(withHexCode hexColour:String){
+        guard let navigationBar = navigationController?.navigationBar else { fatalError()  }
+        guard let navBarColor = UIColor(hexString:hexColour)else { fatalError()  }
+        navigationBar.barTintColor=navBarColor
+        navigationBar.tintColor=ContrastColorOf(navBarColor, returnFlat: true)
+        navigationBar.largeTitleTextAttributes=[NSAttributedStringKey.foregroundColor:ContrastColorOf(navBarColor, returnFlat: true)]
+        search.barTintColor=navBarColor
+        let cancelButtonAttributes = [NSAttributedStringKey.foregroundColor: ContrastColorOf(navBarColor, returnFlat: true)]
+        UIBarButtonItem.appearance().setTitleTextAttributes(cancelButtonAttributes , for: .normal)
+    }
     //MARK: - Tableview Datasource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -34,12 +51,13 @@ class TodoListViewController: SearchTableViewController {
         if let itemObj=items?[indexPath.row]{
             cell.textLabel?.text = itemObj.title
             cell.accessoryType=itemObj.checked ? .checkmark :.none
-           if let colour=UIColor(hexString:selectedCategory!.backgroundColor)?.darken(byPercentage: (CGFloat(indexPath.row)/CGFloat(items!.count)))
+           
+            if let colour=UIColor(hexString:selectedCategory!.backgroundColor)?.darken(byPercentage: (CGFloat(indexPath.row)/CGFloat(items!.count)))
            {
             cell.backgroundColor=colour
             cell.textLabel?.textColor=ContrastColorOf(colour , returnFlat: true)
+             cell.tintColor = ContrastColorOf(colour, returnFlat: true)
             }
-            
         }else{
         cell.textLabel?.text="No Items Added"
         }

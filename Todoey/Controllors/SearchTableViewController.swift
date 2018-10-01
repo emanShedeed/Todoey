@@ -8,6 +8,11 @@
 import UIKit
 
 class SearchTableViewController: UITableViewController,UISearchBarDelegate {
+    override func viewDidLoad() {
+        tableView.separatorStyle = .none
+        tableView.rowHeight=80
+    }
+    let defaultColor="1D9BF6"
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if(searchBar.text?.count==0){
             searchBarCancelButtonClicked(searchBar)

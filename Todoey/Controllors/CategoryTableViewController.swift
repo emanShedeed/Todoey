@@ -18,7 +18,6 @@ class CategoryTableViewController: SearchTableViewController {
         super.viewDidLoad()
         search.showsCancelButton=true
         loadData()
-        tableView.separatorStyle = .none
     }
     
     
